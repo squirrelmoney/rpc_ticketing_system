@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.rpc.mapper.RpcLogMapper">
+
+    <resultMap type="com.lnsf.rpc.entity.RpcLog" id="RpcLogMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="serviceName" column="service_name" jdbcType="VARCHAR"/>
+        <result property="codec" column="codec" jdbcType="VARCHAR"/>
+        <result property="receiveMsg" column="receive_msg" jdbcType="VARCHAR"/>
+        <result property="responMsg" column="respon_msg" jdbcType="VARCHAR"/>
+        <result property="costTime" column="cost_time" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RpcLogMap">
+        select id,
+               service_name,
+               codec,
+               receive_msg,
+               respon_msg,
+               cost_time,
+               create_time
+        from fts.rpc_log
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RpcLogMap">
+        select id,
+               service_name,
+               codec,
+               receive_msg,
+               respon_msg,
+               cost_time,
+               create_time
+        from fts.rpc_log limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="RpcLogMap">
+        select
+        id, service_name, codec, receive_msg, respon_msg, cost_time, create_time
+        from fts.rpc_log
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="serviceName != null and serviceName != ''">
+                and service_name = #{serviceName}
+            </if>
+            <if test="codec != null and codec != ''">
+                and codec = #{codec}
+            </if>
+            <if test="receiveMsg != null and receiveMsg != ''">
+                and receive_msg = #{receiveMsg}
+            </if>
+            <if test="responMsg != null and responMsg != ''">
+                and respon_msg = #{responMsg}
+            </if>
+            <if test="costTime != null">
+                and cost_time = #{costTime}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into fts.rpc_log(id,service_name, codec, receive_msg, respon_msg, cost_time, create_time)
+        values (#{id},#{serviceName}, #{codec}, #{receiveMsg}, #{responMsg}, #{costTime}, #{createTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into fts.rpc_log(id,service_name, codec, receive_msg, respon_msg, cost_time, create_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id}, #{entity.serviceName}, #{entity.codec}, #{entity.receiveMsg}, #{entity.responMsg}, #{entity.costTime},
+            #{entity.createTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into fts.rpc_log(service_name, codec, receive_msg, respon_msg, cost_time, create_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.serviceName}, #{entity.codec}, #{entity.receiveMsg}, #{entity.responMsg}, #{entity.costTime},
+            #{entity.createTime})
+        </foreach>
+        on duplicate key update
+        service_name = values(service_name) , codec = values(codec) , receive_msg = values(receive_msg) , respon_msg =
+        values(respon_msg) , cost_time = values(cost_time) , create_time = values(create_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update fts.rpc_log
+        <set>
+            <if test="serviceName != null and serviceName != ''">
+                service_name = #{serviceName},
+            </if>
+            <if test="codec != null and codec != ''">
+                codec = #{codec},
+            </if>
+            <if test="receiveMsg != null and receiveMsg != ''">
+                receive_msg = #{receiveMsg},
+            </if>
+            <if test="responMsg != null and responMsg != ''">
+                respon_msg = #{responMsg},
+            </if>
+            <if test="costTime != null">
+                cost_time = #{costTime},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from fts.rpc_log
+        where id = #{id}
+    </delete>
+
+</mapper>
+
